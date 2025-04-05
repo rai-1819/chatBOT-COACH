@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Chat Interface</title>
+    <style>
+        /* Base Styles */
+        :root {
+            --primary-color: #1d7efd;
+            --secondary-color: #8f6fff;
+            --user-bubble: #e3f2fd;
+            --bot-bubble: #f5f5f5;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            padding: 2rem 0 4rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            min-height: 90vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Header Styles */
+        .app-header {
+            text-align: center;
+            padding: 2rem 0;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .heading {
+            font-size: 3rem;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .sub-heading {
+            font-size: 1.8rem;
+            color: #555;
+            margin-top: 0.5rem;
+            font-weight: 400;
+        }
+
+        /* Chat Container */
+        .chats-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            padding: 0 2rem;
+            max-height: 60vh;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        /* Message Styles */
+        .message {
+            display: flex;
+            gap: 1rem;
+            max-width: 80%;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .user-message {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+            animation-delay: 0.1s;
+        }
+
+        .bot-message {
+            align-self: flex-start;
+            animation-delay: 0.2s;
+        }
+
+        .message-text {
+            padding: 1rem 1.5rem;
+            border-radius: 1.5rem;
+            line-height: 1.5;
+            box-shadow: var(--shadow);
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        .user-message .message-text {
+            background-color: var(--primary-color);
+            color: white;
+            border-bottom-right-radius: 0.3rem;
+        }
+
+        .bot-message .message-text {
+            background-color: var(--bot-bubble);
+            color: #333;
+            border-bottom-left-radius: 0.3rem;
+        }
+
+        /* Avatar - Pure CSS */
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .avatar::before {
+            content: "AI";
+            font-size: 0.9rem;
+        }
+
+        .avatar::after {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: linear-gradient(135deg, 
+                          rgba(255,255,255,0.3) 0%, 
+                          rgba(255,255,255,0) 50%);
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
+        }
+
+        /* Input Area */
+        .prompt-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 1.5rem;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+
+        .promt-form {
+            display: flex;
+            max-width: 800px;
+            margin: 0 auto;
+            gap: 0.8rem;
+        }
+
+        .promt-input {
+            flex: 1;
+            padding: 0.8rem 1.5rem;
+            border-radius: 2rem;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .promt-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(29, 126, 253, 0.2);
+        }
+
+        .promt-button {
+            padding: 0.8rem 1.8rem;
+            border-radius: 2rem;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .promt-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .promt-button:active {
+            transform: translateY(0);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shine {
+            0% { transform: rotate(45deg) translate(-30px, -30px); }
+            100% { transform: rotate(45deg) translate(30px, 30px); }
+        }
+
+        /* Typing indicator */
+        .typing {
+            display: inline-block;
+        }
+
+        .typing-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #888;
+            margin-right: 4px;
+            animation: typingAnimation 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: 0s; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typingAnimation {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-8px); }
+        }
+
+        /* Scrollbar styling */
+        .chats-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chats-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .chats-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(var(--primary-color), var(--secondary-color));
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="app-header">
+            <h1 class="heading">Hello, there</h1>
+            <h1 class="sub-heading">How can I help you today?</h1>
+        </header>
+
+        <div class="chats-container">
+            <div class="message user-message">
+                <div class="message-text">Hi there! How are you?</div>
+            </div>
+            <div class="message bot-message">
+                <div class="avatar"></div>
+                <div class="message-text">I'm doing well, thank you! How can I assist you today?</div>
+            </div>
+        </div>
+
+        <div class="prompt-container">
+            <div class="promt-wrapper">
+                <form action="#" class="promt-form">
+                    <input type="text" class="promt-input" placeholder="Type your message..." required>
+                    <button type="submit" class="promt-button">Send</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const chatsContainer = document.querySelector(".chats-container");
+        const promtForm = document.querySelector(".promt-form");
+        const promtInput = promtForm.querySelector(".promt-input");
+
+        const GOOGLE_API_KEY = 'AIzaSyDudnt6l_RVPTuwnnj0VqrtLq8WVDewrMY';
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_API_KEY}`;
+
+        let userMessage = "";
+        const chatHistory = [];
+
+        // Create message element with animation
+        const createMsgElement = (content, isUser) => {
+            const div = document.createElement("div");
+            div.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+            
+            if (!isUser) {
+                const avatar = document.createElement("div");
+                avatar.className = "avatar";
+                div.appendChild(avatar);
+            }
+            
+            const textDiv = document.createElement("div");
+            textDiv.className = "message-text";
+            div.appendChild(textDiv);
+            
+            // Add typing indicator for bot messages
+            if (!isUser) {
+                const typing = document.createElement("div");
+                typing.className = "typing";
+                typing.innerHTML = `
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                `;
+                textDiv.appendChild(typing);
+            } else {
+                textDiv.textContent = content;
+            }
+            
+            return div;
+        };
+
+        const generateResponse = async (botMsgDiv) => {
+            const textElement = botMsgDiv.querySelector(".message-text");
+
+            chatHistory.push({
+                role: "user",
+                parts: [{text: userMessage}]
+            });
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({contents: chatHistory})
+                });
+
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error.message);
+                
+                // Simulate typing effect
+                const responseText = data.candidates[0].content.parts[0].text.replace(/<[^>]*>/g, "$1").trim();
+                const words = responseText.split(' ');
+                let i = 0;
+                
+                // Remove typing indicator
+                textElement.innerHTML = '';
+                
+                // Type out the response word by word
+                const typeWriter = setInterval(() => {
+                    if (i < words.length) {
+                        textElement.textContent += (i > 0 ? ' ' : '') + words[i];
+                        i++;
+                        // Scroll to bottom
+                        chatsContainer.scrollTop = chatsContainer.scrollHeight;
+                    } else {
+                        clearInterval(typeWriter);
+                    }
+                }, 100);
+
+            } catch (error) {
+                console.log(error);
+                textElement.innerHTML = '';
+                textElement.textContent = "Sorry, I encountered an error. Please try again.";
+            }
+        };
+
+        const handleFormSubmit = (e) => {
+            e.preventDefault();
+            userMessage = promtInput.value.trim();
+            if (!userMessage) return;
+
+            promtInput.value = "";
+
+            // Add user message
+            const userMsgDiv = createMsgElement(userMessage, true);
+            chatsContainer.appendChild(userMsgDiv);
+            
+            // Scroll to bottom
+            chatsContainer.scrollTop = chatsContainer.scrollHeight;
+
+            // Add bot message after a short delay
+            setTimeout(() => {
+                const botMsgDiv = createMsgElement("", false);
+                chatsContainer.appendChild(botMsgDiv);
+                chatsContainer.scrollTop = chatsContainer.scrollHeight;
+                generateResponse(botMsgDiv);
+            }, 600);
+        };
+
+        promtForm.addEventListener("submit", handleFormSubmit);
+        
+        // Allow sending with Enter key
+        promtInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                promtForm.dispatchEvent(new Event("submit"));
+            }
+        });
+    </script>
+</body>
+</html>
