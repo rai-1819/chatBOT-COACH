@@ -105,12 +105,13 @@
 <body>
   <div class="container">
     <div class="header">
-        <img src=""
-      <h1>Hello, AI Mam</h1>
+      <!-- ✅ Fixed image tag -->
+      <img src="logo.png" alt="Logo" class="logo" />
+      <h1>Hello, user</h1>
     </div>
     <div class="chat" id="chat">
-      <div class="message user">Hi! Can i Ask you something?</div>
-      <div class="message bot">Yes, I am your Mindfullness Coach and always willing to help you!!</div>
+      <div class="message user">Hi! Can I ask you something?</div>
+      <div class="message bot">Yes, I am your Mindfulness Coach and always willing to help you!!</div>
     </div>
     <form class="input-area" id="chatForm">
       <input type="text" id="input" placeholder="Type your message..." required />
@@ -123,7 +124,7 @@
     const form = document.getElementById("chatForm");
     const input = document.getElementById("input");
 
-    const API_KEY = 'YOUR_API_KEY'; // Replace with your actual API key
+    const API_KEY = 'AIzaSyDudnt6l_RVPTuwnnj0VqrtLq8WVDewrMY';
     const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
     const chatHistory = [];
