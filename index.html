@@ -32,6 +32,9 @@
       border-radius: 1rem;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 80vh;
     }
 
     .header {
@@ -55,7 +58,7 @@
     }
 
     .chat {
-      max-height: 60vh;
+      flex: 1;
       overflow-y: auto;
       padding: 1rem;
       display: flex;
@@ -111,6 +114,11 @@
       background: linear-gradient(to right, var(--primary), var(--secondary));
       color: #fff;
       cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      opacity: 0.9;
     }
 
     .contributors-box {
@@ -120,7 +128,7 @@
       background-color: #1e1e1e;
       border: 1px solid #333;
       padding: 10px;
-      width: 100px;
+      width: 120px;
       text-align: center;
       border-radius: 10px;
       box-shadow: 0 0 10px #000000;
@@ -151,22 +159,17 @@
     </div>
 
     <form class="input-area" id="chatForm">
-      <input type="text" id="input" placeholder="Type your message..." required />
+      <input type="text" id="input" placeholder="Type your message..." autocomplete="off" required />
       <button type="submit">Send</button>
     </form>
   </div>
 
   <div class="contributors-box">
     <img class="logo" src="https://upload.wikimedia.org/wikipedia/en/3/3a/Lovely_Professional_University_logo.png" alt="Lovely Professional University Logo">
-    <p>LPU
-      <br>
-    </p>
     <h2>Contributors</h2>
     <p>Rai 12303277</p>
     <p>Adarsh 12310531</p>
     <p>Suraj 12323150</p>
-
-
   </div>
 
   <script>
@@ -177,7 +180,7 @@
     const API_KEY = 'AIzaSyDudnt6l_RVPTuwnnj0VqrtLq8WVDewrMY';
     const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
-    const chatHistory = [];
+    let chatHistory = [];
 
     const addMessage = (text, isUser) => {
       const div = document.createElement("div");
@@ -197,13 +200,15 @@
           body: JSON.stringify({ contents: chatHistory })
         });
 
+        if (!res.ok) throw new Error('Network response was not ok');
+
         const data = await res.json();
         const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "You are offline dear.";
         chatHistory.push({ role: "model", parts: [{ text: reply }] });
         addMessage(reply, false);
       } catch (err) {
-        console.error(err);
-        addMessage("Error fetching response. Try again.", false);
+        console.error('Error:', err);
+        addMessage("Error fetching response. Try again later.", false);
       }
     };
 
