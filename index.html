@@ -6,24 +6,31 @@
   <title>LPU Chat</title>
   <style>
     :root {
-      --primary: #1d7efd;
-      --secondary: #8f6fff;
-      --user-bg: #1d7efd;
-      --bot-bg: #f5f5f5;
+      --primary: #ffa500;
+      --secondary: #ffa500;
+      --user-bg: #ffa500;
+      --bot-bg: #2a2a2a;
     }
 
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: #f9f9f9;
+      background: #121212;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      position: relative;
     }
 
     .container {
+      width: 90%;
       max-width: 900px;
       margin: 2rem auto;
-      background: #fff;
+      background: #1e1e1e;
       border-radius: 1rem;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
       overflow: hidden;
     }
 
@@ -43,7 +50,8 @@
     .logo {
       display: block;
       margin: 0 auto 1rem;
-      width: 180px;
+      width: 80px;
+      border-radius: 0.5rem;
     }
 
     .chat {
@@ -60,7 +68,8 @@
       padding: 0.8rem 1.2rem;
       border-radius: 1.2rem;
       line-height: 1.5;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      word-wrap: break-word;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
     }
 
     .user {
@@ -73,7 +82,7 @@
     .bot {
       align-self: flex-start;
       background: var(--bot-bg);
-      color: #333;
+      color: #eee;
       border-bottom-left-radius: 0.3rem;
     }
 
@@ -81,14 +90,17 @@
       display: flex;
       gap: 1rem;
       padding: 1rem;
-      border-top: 1px solid #eee;
+      border-top: 1px solid #333;
+      background: #1e1e1e;
     }
 
     input {
       flex: 1;
       padding: 0.8rem 1rem;
       border-radius: 2rem;
-      border: 1px solid #ccc;
+      border: 1px solid #555;
+      background: #2c2c2c;
+      color: #fff;
       outline: none;
     }
 
@@ -100,23 +112,61 @@
       color: #fff;
       cursor: pointer;
     }
+
+    .contributors-box {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #1e1e1e;
+      border: 1px solid #333;
+      padding: 10px;
+      width: 100px;
+      text-align: center;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #000000;
+      font-size: 0.9rem;
+    }
+
+    .contributors-box h2 {
+      margin-bottom: 8px;
+      font-size: 1rem;
+      color: #ffa500;
+    }
+
+    .contributors-box p {
+      margin: 4px 0;
+    }
   </style>
 </head>
+
 <body>
   <div class="container">
     <div class="header">
-      <img src="https://upload.wikimedia.org/wikipedia/en/3/3a/Lovely_Professional_University_logo.png" alt="Lovely Professional University Logo" width="100">
-
       <h1>Hello, user</h1>
     </div>
+
     <div class="chat" id="chat">
       <div class="message user">Hi! Can I ask you something?</div>
       <div class="message bot">Yes, I am your Mindfulness Coach and always willing to help you!!</div>
     </div>
+
     <form class="input-area" id="chatForm">
       <input type="text" id="input" placeholder="Type your message..." required />
       <button type="submit">Send</button>
     </form>
+  </div>
+
+  <div class="contributors-box">
+    <img class="logo" src="https://upload.wikimedia.org/wikipedia/en/3/3a/Lovely_Professional_University_logo.png" alt="Lovely Professional University Logo">
+    <p>LPU
+      <br>
+    </p>
+    <h2>Contributors</h2>
+    <p>Rai 12303277</p>
+    <p>Adarsh 12310531</p>
+    <p>Suraj 12323150</p>
+
+
   </div>
 
   <script>
@@ -148,7 +198,7 @@
         });
 
         const data = await res.json();
-        const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "No response.";
+        const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "You are offline dear.";
         chatHistory.push({ role: "model", parts: [{ text: reply }] });
         addMessage(reply, false);
       } catch (err) {
